@@ -3,20 +3,49 @@
 import { useQuery } from '@tanstack/react-query'
 import { api } from '@/lib/api'
 import AuctionCard from '@/components/AuctionCard'
+import { Auction } from '@/types/auctions'
 
 export default function AuctionsPage() {
-  const { data, isLoading } = useQuery({
+  const { data: auctions, isLoading, error } = useQuery<Auction[]>({
     queryKey: ['auctions'],
-    queryFn: async () => (await api.get('/auctions')).data,
+    queryFn: async () => {
+      const response = await api.get('/auctions')
+      return response.data
+    },
   })
 
-  if (isLoading) return <p>Loading...</p>
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <p className="text-lg">Loading auctions...</p>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <p className="text-red-500 text-lg">Failed to load auctions</p>
+      </div>
+    )
+  }
+
+  if (!auctions?.length) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <p className="text-gray-500 text-lg">No auctions available</p>
+      </div>
+    )
+  }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-      {data?.map((auction: any) => (
-        <AuctionCard key={auction.id} auction={auction} />
-      ))}
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-3xl font-bold mb-8">Current Auctions</h1>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {auctions.map((auction) => (
+          <AuctionCard key={auction.id} auction={auction} />
+        ))}
+      </div>
     </div>
   )
 }

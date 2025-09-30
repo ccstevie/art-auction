@@ -6,13 +6,7 @@ import { Button } from '@/components/ui/button'
 import AuctionCard from '@/components/AuctionCard'
 import { useQuery } from '@tanstack/react-query'
 import { api } from '@/lib/api'
-
-type Auction = {
-  id: string
-  title: string
-  imageUrl: string
-  currentBid: number
-}
+import { Auction } from '@/types/auctions'
 
 export default function HomePage() {
   const { data: auctions, isLoading } = useQuery<Auction[]>({
@@ -23,15 +17,8 @@ export default function HomePage() {
     },
   })
 
-  const placeholderAuctions: Auction[] = [
-    { id: '1', title: 'Sunset Painting', imageUrl: '/placeholder1.jpg', currentBid: 100 },
-    { id: '2', title: 'Modern Art', imageUrl: '/placeholder2.jpg', currentBid: 200 },
-    { id: '3', title: 'Abstract Sketch', imageUrl: '/placeholder3.jpg', currentBid: 50 },
-  ]
-
-  const auctionList: Auction[] = Array.isArray(auctions) && auctions.length > 0
-    ? auctions
-    : placeholderAuctions
+  // Remove the minimal Auction type and placeholder auctions 
+  // since our mock API now returns full data
 
   return (
     <main className="flex flex-col items-center justify-center min-h-screen bg-gray-50 p-6 gap-8">
@@ -86,10 +73,12 @@ export default function HomePage() {
       <section className="mt-12 w-full max-w-6xl">
         <h2 className="text-2xl font-bold mb-4">Latest Auctions</h2>
         {isLoading ? (
-          <p>Loading auctions...</p>
+          <div className="flex justify-center">
+            <p className="text-lg">Loading auctions...</p>
+          </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {auctionList.map((auction: Auction) => (
+            {auctions?.map((auction: Auction) => (
               <AuctionCard key={auction.id} auction={auction} />
             ))}
           </div>

@@ -12,6 +12,15 @@ interface BidBoxProps {
   currentBid: number;
 }
 
+// Add proper error type
+interface ApiError {
+  response?: {
+    data?: {
+      message?: string
+    }
+  }
+}
+
 export default function BidBox({ auctionId, currentBid }: BidBoxProps) {
   const [amount, setAmount] = useState('')
   const queryClient = useQueryClient()
@@ -26,7 +35,7 @@ export default function BidBox({ auctionId, currentBid }: BidBoxProps) {
       // Invalidate and refetch auction data
       queryClient.invalidateQueries({ queryKey: ['auction', auctionId] })
     },
-    onError: (error: any) => {
+    onError: (error: ApiError) => { // Fixed: replaced 'any' with proper type
       alert(error.response?.data?.message || 'Failed to place bid')
     }
   })

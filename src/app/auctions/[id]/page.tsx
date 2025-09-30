@@ -1,17 +1,19 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, use } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { api } from '@/lib/api'
 import { socket } from '@/lib/socket'
 import BidBox from '@/components/BidBox'
 import { Auction, Bid } from '@/types/auctions'
 
-export default function AuctionDetail({ params }: { params: { id: string } }) {
+export default function AuctionDetail({ params }: { params: Promise<{ id: string }> }) { // params is now a Promise
+  const { id } = use(params)
+  
   const { data: auction, isLoading, error } = useQuery<Auction>({
-    queryKey: ['auction', params.id],
+    queryKey: ['auction', id], // Use the unwrapped id
     queryFn: async () => {
-      const response = await api.get(`/auctions/${params.id}`)
+      const response = await api.get(`/auctions/${id}`) // Use the unwrapped id
       return response.data
     },
   })
@@ -25,7 +27,7 @@ export default function AuctionDetail({ params }: { params: { id: string } }) {
     socket.connect()
 
     // Join the auction room
-    socket.emit('joinAuction', params.id)
+    socket.emit('joinAuction', id) // Use the unwrapped id
     
     // Listen for new bids
     socket.on('bid:new', (bid: Bid) => {
@@ -39,12 +41,12 @@ export default function AuctionDetail({ params }: { params: { id: string } }) {
     })
 
     return () => {
-      socket.emit('leaveAuction', params.id)
+      socket.emit('leaveAuction', id) // Use the unwrapped id
       socket.off('bid:new')
       socket.off('bid:update')
       // Don't disconnect completely as other components might use it
     }
-  }, [params.id, auction])
+  }, [id, auction]) // Use the unwrapped id in dependencies
 
   if (isLoading) {
     return (
@@ -101,7 +103,7 @@ export default function AuctionDetail({ params }: { params: { id: string } }) {
           </div>
 
           {!isEnded && (
-            <BidBox auctionId={auction.id} currentBid={auction.currentBid} />
+            <BidBox auctionId={id} currentBid={auction.currentBid} />
           )}
         </div>
       </div>

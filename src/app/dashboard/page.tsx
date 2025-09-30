@@ -1,28 +1,34 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { auth } from '@/lib/auth'
+import { useSession, signOut } from 'next-auth/react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 export default function DashboardPage() {
-  const [user, setUser] = useState(auth.getCurrentUser())
+  const { data: session, status } = useSession()
   const router = useRouter()
 
   useEffect(() => {
-    if (!auth.isAuthenticated()) {
+    if (status === 'unauthenticated') {
       router.push('/login')
     }
-  }, [router])
+  }, [status, router])
 
   const handleSignOut = () => {
-    auth.signOut()
-    setUser(null)
-    router.push('/')
+    signOut({ callbackUrl: '/' })
   }
 
-  if (!user) {
+  if (status === 'loading') {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <p>Loading...</p>
+      </div>
+    )
+  }
+
+  if (!session) {
     return (
       <div className="flex justify-center items-center h-64">
         <p>Redirecting to login...</p>
@@ -33,7 +39,10 @@ export default function DashboardPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">Dashboard</h1>
+        <div>
+          <h1 className="text-3xl font-bold">Dashboard</h1>
+          <p className="text-gray-600">Welcome back, {session.user?.name}</p>
+        </div>
         <Button variant="outline" onClick={handleSignOut}>
           Sign Out
         </Button>

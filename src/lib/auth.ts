@@ -1,7 +1,7 @@
 import NextAuth, { type Session } from 'next-auth'
 import GitHub from 'next-auth/providers/github'
 
-export const authConfig = {
+export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
     GitHub({
       clientId: process.env.GITHUB_ID!,
@@ -11,7 +11,7 @@ export const authConfig = {
   callbacks: {
     async session({ session, token }: { session: Session; token: { sub?: string } }) {
       if (session.user && token.sub) {
-        (session.user as any).id = token.sub
+        session.user.id = token.sub
       }
       return session
     },
@@ -21,6 +21,4 @@ export const authConfig = {
     signOut: '/',
     error: '/auth/error',
   },
-}
-
-export const { auth, signIn, signOut } = NextAuth(authConfig)
+})

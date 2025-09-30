@@ -16,15 +16,6 @@ interface AuctionForm {
   endTime: string
 }
 
-// Add proper error type
-interface ApiError {
-  response?: {
-    data?: {
-      message?: string
-    }
-  }
-}
-
 export default function SellPage() {
   const [form, setForm] = useState<AuctionForm>({
     title: '',
@@ -49,7 +40,7 @@ export default function SellPage() {
         endTime: '',
       })
     },
-    onError: (error: ApiError) => { // Fixed: replaced 'any' with proper type
+    onError: (error: any) => {
       alert(error.response?.data?.message || 'Failed to create auction')
     }
   })

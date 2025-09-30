@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server'
 
-export async function POST(request: Request) {
+export async function POST(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
   try {
     const { amount } = await request.json()
     
@@ -28,7 +31,7 @@ export async function POST(request: Request) {
       bid: {
         id: Math.random().toString(36).substr(2, 9),
         amount,
-        userId: 'current-user-mock',
+        userId: 'current-user-mock', // Would come from auth in real app
         user: { name: 'You', email: 'current@example.com' },
         createdAt: new Date().toISOString(),
       }

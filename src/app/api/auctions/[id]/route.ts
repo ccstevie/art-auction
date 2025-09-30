@@ -137,9 +137,12 @@ const mockAuctions = [
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const auction = mockAuctions.find(a => a.id === params.id)
+  // Await the params to resolve the Promise
+  const { id } = await params
+  
+  const auction = mockAuctions.find(a => a.id === id)
   
   if (!auction) {
     return NextResponse.json({ error: 'Auction not found' }, { status: 404 })

@@ -1,4 +1,4 @@
-import NextAuth from 'next-auth'
+import NextAuth, { type Session } from 'next-auth'
 import GitHub from 'next-auth/providers/github'
 
 export const authConfig = {
@@ -9,9 +9,9 @@ export const authConfig = {
     }),
   ],
   callbacks: {
-    async session({ session, token }: { session: any; token: any }) {
+    async session({ session, token }: { session: Session; token: { sub?: string } }) {
       if (session.user && token.sub) {
-        session.user.id = token.sub
+        (session.user as any).id = token.sub
       }
       return session
     },

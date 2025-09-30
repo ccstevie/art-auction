@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import { signIn } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent } from '@/components/ui/card'
@@ -10,14 +9,11 @@ import { Card, CardContent } from '@/components/ui/card'
 export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [isLoading, setIsLoading] = useState(false)
-  const router = useRouter()
 
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
     
-    // For demo - we'll use GitHub OAuth for now
-    // In production, you can set up email provider
     await signIn('github', { callbackUrl: '/dashboard' })
     
     setIsLoading(false)
@@ -37,7 +33,7 @@ export default function LoginPage() {
           <form onSubmit={handleEmailLogin} className="space-y-4">
             <div>
               <label className="block text-sm font-medium mb-2">
-                Email (Demo - use GitHub for now)
+                Email
               </label>
               <Input
                 type="email"
@@ -71,14 +67,6 @@ export default function LoginPage() {
             >
               {isLoading ? 'Signing In...' : 'Sign in with GitHub'}
             </Button>
-            
-            {/* <Button 
-              onClick={() => handleOAuthLogin('google')}
-              className="w-full bg-blue-600 hover:bg-blue-700"
-              disabled={isLoading}
-            >
-              Sign in with Google
-            </Button> */}
           </div>
 
           <div className="mt-6 p-4 bg-gray-50 rounded-lg">

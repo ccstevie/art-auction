@@ -20,33 +20,33 @@ export default function AuctionDetail({ params }: { params: Promise<{ id: string
 
   const [bids, setBids] = useState<Bid[]>([])
 
-  useEffect(() => {
-    if (!auction) return
+  // useEffect(() => {
+  //   if (!auction) return
 
-    // Connect socket when component mounts
-    socket.connect()
+  //   // Connect socket when component mounts
+  //   socket.connect()
 
-    // Join the auction room
-    socket.emit('joinAuction', id) // Use the unwrapped id
+  //   // Join the auction room
+  //   socket.emit('joinAuction', id) // Use the unwrapped id
     
-    // Listen for new bids
-    socket.on('bid:new', (bid: Bid) => {
-      setBids((prev) => [bid, ...prev])
-    })
+  //   // Listen for new bids
+  //   socket.on('bid:new', (bid: Bid) => {
+  //     setBids((prev) => [bid, ...prev])
+  //   })
 
-    // Listen for bid updates to keep in sync
-    socket.on('bid:update', (updatedAuction: Auction) => {
-      // You could update the local state or refetch
-      console.log('Auction updated:', updatedAuction)
-    })
+  //   // Listen for bid updates to keep in sync
+  //   socket.on('bid:update', (updatedAuction: Auction) => {
+  //     // You could update the local state or refetch
+  //     console.log('Auction updated:', updatedAuction)
+  //   })
 
-    return () => {
-      socket.emit('leaveAuction', id) // Use the unwrapped id
-      socket.off('bid:new')
-      socket.off('bid:update')
-      // Don't disconnect completely as other components might use it
-    }
-  }, [id, auction]) // Use the unwrapped id in dependencies
+  //   return () => {
+  //     socket.emit('leaveAuction', id) // Use the unwrapped id
+  //     socket.off('bid:new')
+  //     socket.off('bid:update')
+  //     // Don't disconnect completely as other components might use it
+  //   }
+  // }, [id, auction]) // Use the unwrapped id in dependencies
 
   if (isLoading) {
     return (

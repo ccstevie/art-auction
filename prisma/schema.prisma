@@ -3,12 +3,12 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "mongodb"
   url      = env("DATABASE_URL")
 }
 
 model User {
-  id        String   @id @default(cuid())
+  id        String @id @default(auto()) @map("_id") @db.ObjectId
   email     String   @unique
   name      String?
   image     String?
@@ -23,7 +23,7 @@ model User {
 }
 
 model Auction {
-  id           String   @id @default(cuid())
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
   title        String
   description  String
   imageUrl     String
@@ -43,7 +43,7 @@ model Auction {
 }
 
 model Bid {
-  id        String   @id @default(cuid())
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
   amount    Float
   createdAt DateTime @default(now())
 

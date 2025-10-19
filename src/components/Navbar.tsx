@@ -13,31 +13,43 @@ export default function Navbar() {
   }
 
   return (
-    <nav className="flex justify-between items-center p-4 bg-white shadow">
-      <Link href="/" className="text-xl font-bold">Art Auction</Link>
-      <div className="flex gap-2">
-        <Link href="/auctions">
-          <Button variant="outline">Browse Auctions</Button>
-        </Link>
-        <Link href="/sell">
-          <Button>Sell Art</Button>
+    <nav className="flex justify-between items-center px-6 py-4 bg-white/80 backdrop-blur-sm border-b">
+      <Link href="/" className="text-xl font-serif font-normal tracking-wider hover:opacity-70 transition-opacity">
+        ART AUCTION
+      </Link>
+      
+      <div className="flex gap-6 items-center">
+        <Link href="/auctions" className="text-sm font-light hover:text-gray-600 transition-all duration-200 py-2 px-3 rounded-lg hover:bg-gray-50">
+          Auctions
         </Link>
         
         {isLoading ? (
-          <Button variant="ghost" disabled>Loading...</Button>
+          <div className="text-sm text-gray-400">Loading...</div>
         ) : isAuthenticated ? (
           <>
-            <Link href="/dashboard">
-              <Button variant="ghost">Dashboard</Button>
+            <Link href="/sell" className="text-sm font-light hover:text-gray-600 transition-all duration-200 py-2 px-3 rounded-lg hover:bg-gray-50">
+              Sell
             </Link>
-            <Button variant="ghost" onClick={handleSignOut}>
+            <Link href="/dashboard" className="text-sm font-light hover:text-gray-600 transition-all duration-200 py-2 px-3 rounded-lg hover:bg-gray-50">
+              Account
+            </Link>
+            <Button 
+              variant="ghost" 
+              onClick={handleSignOut} 
+              className="hover:bg-red-50 hover:text-red-600 transition-all text-sm"
+            >
               Sign Out
             </Button>
           </>
         ) : (
-          <Link href="/login">
-            <Button variant="ghost">Sign In</Button>
-          </Link>
+          <div className="flex gap-3">
+            <Link href="/login" className="text-sm font-light hover:text-gray-600 transition-all duration-200 py-2 px-3 rounded-lg hover:bg-gray-50">
+              Sign In
+            </Link>
+            <Link href="/register" className="text-sm bg-black text-white py-2 px-4 rounded-lg hover:bg-gray-800 transition-all duration-200">
+              Register
+            </Link>
+          </div>
         )}
       </div>
     </nav>

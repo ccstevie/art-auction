@@ -8,54 +8,74 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent } from '@/components/ui/card'
 
-export default function LoginPage() {
+export default function RegisterPage() {
   const [email, setEmail] = useState('')
+  const [name, setName] = useState('')
   const [password, setPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
 
-  const handleEmailLogin = async (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
     
     try {
-      const result = await signIn('credentials', {
-        email,
-        password,
-        redirect: false,
+      // Create user via API
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, name, password }),
       })
 
-      if (result?.ok) {
-        router.push('/dashboard')
+      if (response.ok) {
+        // Auto-login after registration
+        const result = await signIn('credentials', {
+          email,
+          password,
+          redirect: false,
+        })
+
+        if (result?.ok) {
+          router.push('/dashboard')
+        }
       } else {
-        alert('Invalid email or password')
+        const error = await response.json()
+        alert(error.error || 'Registration failed')
       }
     } catch (error) {
-      alert('Login failed')
+      alert('Registration failed')
     } finally {
       setIsLoading(false)
     }
-  }
-
-  const handleOAuthLogin = (provider: string) => {
-    setIsLoading(true)
-    signIn(provider, { callbackUrl: '/dashboard' })
   }
 
   return (
     <div className="container mx-auto px-4 py-16 max-w-md">
       <Card>
         <CardContent className="p-6">
-          <h1 className="text-2xl font-bold mb-6 text-center">Sign In</h1>
+          <h1 className="text-2xl font-bold mb-6 text-center">Create Account</h1>
           
-          <form onSubmit={handleEmailLogin} className="space-y-4">
+          <form onSubmit={handleRegister} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                Full Name
+              </label>
+              <Input
+                type="text"
+                placeholder="Enter your name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+              />
+            </div>
+
             <div>
               <label className="block text-sm font-medium mb-2">
                 Email
               </label>
               <Input
                 type="email"
-                placeholder="your@email.com"
+                placeholder="Enter your email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -68,7 +88,7 @@ export default function LoginPage() {
               </label>
               <Input
                 type="password"
-                placeholder="Your password"
+                placeholder="Create a password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -84,27 +104,11 @@ export default function LoginPage() {
             </Button>
           </form>
 
-          <div className="my-6 flex items-center">
-            <div className="flex-grow border-t border-gray-300"></div>
-            <span className="mx-4 text-gray-500">or</span>
-            <div className="flex-grow border-t border-gray-300"></div>
-          </div>
-
-          <div className="space-y-3">
-            <Button 
-              onClick={() => handleOAuthLogin('github')}
-              className="w-full bg-gray-800 hover:bg-gray-900"
-              disabled={isLoading}
-            >
-              Sign in with GitHub
-            </Button>
-          </div>
-
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-600">
-              Don't have an account?{' '}
-              <Link href="/register" className="text-blue-600 hover:underline">
-                Create one
+              Already have an account?{' '}
+              <Link href="/login" className="text-blue-600 hover:underline">
+                Sign in
               </Link>
             </p>
           </div>

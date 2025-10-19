@@ -64,6 +64,7 @@ export default function BidBox({ auctionId, currentBid }: BidBoxProps) {
       <Button 
         onClick={handlePlaceBid}
         disabled={bidMutation.isPending || !amount}
+        className="transition-all duration-200 hover:shadow-lg transform hover:-translate-y-0.5"
       >
         {bidMutation.isPending ? 'Placing...' : 'Place Bid'}
       </Button>

@@ -23,21 +23,35 @@ export default function HomePage() {
   return (
     <main className="flex flex-col items-center justify-center min-h-screen bg-gray-50 p-6 gap-8">
       {/* Hero Section */}
-      <h1 className="text-4xl font-bold text-gray-900 text-center">
-        Welcome to Art Auction
-      </h1>
-      <p className="text-gray-600 text-center max-w-xl">
-        Discover amazing artwork, bid in real-time, and support artists worldwide.
-      </p>
-
-      <div className="flex gap-4">
-        <Link href="/auctions">
-          <Button size="lg">Browse Auctions</Button>
-        </Link>
-        <Link href="/sell">
-          <Button size="lg" variant="outline">Sell Your Art</Button>
-        </Link>
-      </div>
+      <section className="relative h-96 flex items-center justify-center bg-black mb-16">
+        <div className="absolute inset-0">
+          <img 
+            src="https://images.unsplash.com/photo-1578301978693-85fa9c0320b9?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"
+            alt="Featured Artwork"
+            className="w-full h-full object-cover opacity-60"
+          />
+        </div>
+        <div className="relative text-center text-white max-w-4xl mx-auto px-4">
+          <h1 className="text-4xl md:text-6xl font-serif font-light mb-6 tracking-tight">
+            Extraordinary Art
+          </h1>
+          <p className="text-lg md:text-xl mb-8 font-light max-w-2xl mx-auto">
+            Discover and bid on exceptional works from emerging and established artists
+          </p>
+          <div className="flex gap-4 justify-center">
+            <Link href="/auctions">
+              <Button size="lg" className="bg-white text-black hover:bg-gray-100">
+                View Current Auctions
+              </Button>
+            </Link>
+            <Link href="/sell">
+              <Button size="lg" variant="outline" className="bg-white text-black hover:bg-gray-100">
+                Sell Your Art
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </section>
 
       {/* Features Section */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12 w-full max-w-6xl">

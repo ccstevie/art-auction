@@ -1,5 +1,8 @@
 'use client'
 
+import { useEffect } from 'react'
+import { useSession } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import { api } from '@/lib/api'
@@ -16,16 +19,9 @@ interface AuctionForm {
   endTime: string
 }
 
-// Add proper error type
-interface ApiError {
-  response?: {
-    data?: {
-      message?: string
-    }
-  }
-}
-
 export default function SellPage() {
+  const { data: session, status } = useSession()
+  const router = useRouter()
   const [form, setForm] = useState<AuctionForm>({
     title: '',
     description: '',
@@ -33,6 +29,14 @@ export default function SellPage() {
     startingPrice: 0,
     endTime: '',
   })
+
+  // Redirect if not authenticated
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/login')
+    }
+  }, [status, router])
+
 
   const createAuctionMutation = useMutation({
     mutationFn: async (auctionData: AuctionForm) => {
@@ -48,8 +52,9 @@ export default function SellPage() {
         startingPrice: 0,
         endTime: '',
       })
+      router.push('/auctions') // Redirect to auctions page
     },
-    onError: (error: ApiError) => { // Fixed: replaced 'any' with proper type
+    onError: (error: any) => {
       alert(error.response?.data?.message || 'Failed to create auction')
     }
   })
@@ -63,11 +68,26 @@ export default function SellPage() {
     setForm(prev => ({ ...prev, [field]: value }))
   }
 
+   // Show loading while checking auth
+  if (status === 'loading') {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <p>Loading...</p>
+      </div>
+    )
+  }
+
+  // Show nothing if not authenticated (will redirect)
+  if (!session) {
+    return null
+  }
+
   return (
     <div className="container mx-auto px-4 py-8 max-w-2xl">
       <Card>
         <CardContent className="p-6">
-          <h1 className="text-3xl font-bold mb-6">Sell Your Art</h1>
+          <h1 className="text-3xl font-bold mb-2">Sell Your Art</h1>
+          <p className="text-gray-600 mb-6">Welcome, {session.user?.name}</p>
           
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>

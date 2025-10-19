@@ -1,0 +1,63 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  image     String?
+  password  String?  // Add this line for local authentication
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  auctions Auction[]
+  bids     Bid[]
+
+  @@map("users")
+}
+
+model Auction {
+  id           String   @id @default(cuid())
+  title        String
+  description  String
+  imageUrl     String
+  startingPrice Float
+  currentBid   Float
+  endTime      DateTime
+  status       AuctionStatus @default(ACTIVE)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  bids    Bid[]
+
+  @@map("auctions")
+}
+
+model Bid {
+  id        String   @id @default(cuid())
+  amount    Float
+  createdAt DateTime @default(now())
+
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  auctionId String
+  auction   Auction  @relation(fields: [auctionId], references: [id], onDelete: Cascade)
+
+  @@map("bids")
+}
+
+enum AuctionStatus {
+  ACTIVE
+  ENDED
+  CANCELLED
+}

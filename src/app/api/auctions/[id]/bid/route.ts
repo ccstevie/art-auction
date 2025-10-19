@@ -1,43 +1,45 @@
 import { NextResponse } from 'next/server'
+import { getServerSession } from 'next-auth'
+import { authConfig } from '@/lib/auto-config'
+import { prisma } from '@/lib/db'
 
 export async function POST(request: Request) {
   try {
-    const { amount } = await request.json()
+    // Get the authenticated user from session
+    const session = await getServerSession(authConfig)
     
-    if (!amount || typeof amount !== 'number') {
+    if (!session?.user?.id) {
       return NextResponse.json(
-        { error: 'Valid bid amount is required' },
-        { status: 400 }
+        { error: 'You must be logged in to create an auction' },
+        { status: 401 }
       )
     }
-    
-    if (amount <= 0) {
-      return NextResponse.json(
-        { error: 'Bid amount must be positive' },
-        { status: 400 }
-      )
-    }
-    
-    // Simulate processing delay
-    await new Promise(resolve => setTimeout(resolve, 800))
-    
-    // Mock successful bid response
-    return NextResponse.json({
-      success: true,
-      message: 'Bid placed successfully!',
-      bid: {
-        id: Math.random().toString(36).substr(2, 9),
-        amount,
-        userId: 'current-user-mock',
-        user: { name: 'You', email: 'current@example.com' },
-        createdAt: new Date().toISOString(),
+
+    const body = await request.json()
+    const { title, description, imageUrl, startingPrice, endTime } = body
+
+    const auction = await prisma.auction.create({
+      data: {
+        title,
+        description,
+        imageUrl,
+        startingPrice: parseFloat(startingPrice),
+        currentBid: parseFloat(startingPrice),
+        endTime: new Date(endTime),
+        userId: session.user.id // Use the real user ID
+      },
+      include: {
+        user: {
+          select: { name: true, image: true }
+        }
       }
     })
-    
+
+    return NextResponse.json({ success: true, auction })
   } catch (error) {
-    console.error('Bid placement error:', error)
+    console.error('Failed to create auction:', error)
     return NextResponse.json(
-      { error: 'Failed to place bid' },
+      { error: 'Failed to create auction' },
       { status: 500 }
     )
   }

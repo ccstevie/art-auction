@@ -1,15 +1,15 @@
 'use client'
 
-import { useEffect, useState, use } from 'react'
+import { useState, use } from 'react'
 import { useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 import { useQuery } from '@tanstack/react-query'
 import { api } from '@/lib/api'
-import { socket } from '@/lib/socket'
 import BidBox from '@/components/BidBox'
 import { Button } from '@/components/ui/button'
 import { Auction, Bid } from '@/types/auctions'
 import Link from 'next/link'
+import { AxiosError } from 'axios';
 
 export default function AuctionDetail({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)
@@ -22,25 +22,29 @@ export default function AuctionDetail({ params }: { params: Promise<{ id: string
       const response = await api.get(`/auctions/${id}`)
       return response.data
     },
-    refetchInterval: 30000, // Refresh every 30 seconds for live updates
+    refetchInterval: 30000,
   })
 
   const [bids, setBids] = useState<Bid[]>([])
   const [imageLoaded, setImageLoaded] = useState(false)
 
   const handleDeleteAuction = async () => {
-    if (!confirm('Are you sure you want to delete this auction? This action cannot be undone.')) return
+    if (!confirm('Are you sure you want to delete this auction? This action cannot be undone.')) return;
 
     try {
-      const response = await api.delete(`/auctions/${id}`)
+      const response = await api.delete(`/auctions/${id}`);
       if (response.data.success) {
-        alert('Auction deleted successfully')
-        router.push('/auctions')
+        alert('Auction deleted successfully');
+        router.push('/auctions');
       }
-    } catch (error: any) {
-      alert(error.response?.data?.error || 'Failed to delete auction')
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        alert(error.response?.data?.error || 'Failed to delete auction');
+      } else {
+        alert('Failed to delete auction');
+      }
     }
-  }
+  };
 
   const isEnded = auction ? new Date(auction.endTime) < new Date() : false
   const isOwner = session?.user?.id === auction?.userId
@@ -79,6 +83,7 @@ export default function AuctionDetail({ params }: { params: Promise<{ id: string
     return (
       <div className="min-h-screen bg-cream flex items-center justify-center">
         <div className="text-center max-w-md mx-auto px-4">
+          {/* eslint-disable-next-line react/no-unescaped-entities */}
           <div className="text-6xl mb-4">🎨</div>
           <h1 className="text-2xl font-serif text-deep-blue mb-2">Auction Not Found</h1>
           <p className="text-gray-600 mb-6">The auction you're looking for doesn't exist or has been removed.</p>

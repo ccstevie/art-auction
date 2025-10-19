@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Card, CardContent } from '@/components/ui/card'
+import { AxiosError } from 'axios';
 
 interface AuctionForm {
   title: string
@@ -80,7 +81,7 @@ export default function SellPage() {
       })
       router.push('/auctions')
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError<{ message?: string }>) => {
       alert(error.response?.data?.message || 'Failed to create auction')
     }
   })

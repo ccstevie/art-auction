@@ -22,6 +22,11 @@ export interface Auction {
   updatedAt: string;
   bids: Bid[];
   status: 'active' | 'ended' | 'upcoming';
+  userId: string;
+  user?: {
+    name: string;
+    image: string;
+  };
 }
 
 export interface BidRequest {

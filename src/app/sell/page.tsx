@@ -1,9 +1,8 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import { api } from '@/lib/api'
 import { Button } from '@/components/ui/button'
@@ -29,6 +28,7 @@ export default function SellPage() {
     startingPrice: 0,
     endTime: '',
   })
+  const [isUploading, setIsUploading] = useState(false)
 
   // Redirect if not authenticated
   useEffect(() => {
@@ -37,6 +37,32 @@ export default function SellPage() {
     }
   }, [status, router])
 
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    setIsUploading(true)
+    const formData = new FormData()
+    formData.append('image', file)
+
+    try {
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      })
+      
+      const result = await response.json()
+      if (result.success) {
+        setForm(prev => ({ ...prev, imageUrl: result.imageUrl }))
+      } else {
+        alert(result.error || 'Failed to upload image')
+      }
+    } catch (error) {
+      alert('Failed to upload image')
+    } finally {
+      setIsUploading(false)
+    }
+  }
 
   const createAuctionMutation = useMutation({
     mutationFn: async (auctionData: AuctionForm) => {
@@ -52,7 +78,7 @@ export default function SellPage() {
         startingPrice: 0,
         endTime: '',
       })
-      router.push('/auctions') // Redirect to auctions page
+      router.push('/auctions')
     },
     onError: (error: any) => {
       alert(error.response?.data?.message || 'Failed to create auction')
@@ -61,6 +87,12 @@ export default function SellPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
+    
+    if (!form.imageUrl) {
+      alert('Please upload an image first')
+      return
+    }
+    
     createAuctionMutation.mutate(form)
   }
 
@@ -68,7 +100,7 @@ export default function SellPage() {
     setForm(prev => ({ ...prev, [field]: value }))
   }
 
-   // Show loading while checking auth
+  // Show loading while checking auth
   if (status === 'loading') {
     return (
       <div className="flex justify-center items-center h-64">
@@ -118,17 +150,30 @@ export default function SellPage() {
 
             <div>
               <label className="block text-sm font-medium mb-2">
-                Image URL
+                Artwork Image
               </label>
               <Input
-                type="url"
-                placeholder="https://example.com/your-artwork.jpg"
-                value={form.imageUrl}
-                onChange={(e) => handleChange('imageUrl', e.target.value)}
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+                disabled={isUploading}
                 required
               />
+              {isUploading && (
+                <p className="text-sm text-blue-600 mt-1">Uploading image...</p>
+              )}
+              {form.imageUrl && !isUploading && (
+                <div className="mt-2">
+                  <p className="text-sm text-green-600">✓ Image uploaded successfully</p>
+                  <img 
+                    src={form.imageUrl} 
+                    alt="Preview" 
+                    className="mt-2 h-32 w-32 object-cover rounded border"
+                  />
+                </div>
+              )}
               <p className="text-sm text-gray-500 mt-1">
-                Use a high-quality image that showcases your artwork
+                Upload a high-quality image of your artwork (max 5MB)
               </p>
             </div>
 
@@ -164,22 +209,11 @@ export default function SellPage() {
             <Button 
               type="submit" 
               className="w-full"
-              disabled={createAuctionMutation.isPending}
+              disabled={createAuctionMutation.isPending || !form.imageUrl}
             >
               {createAuctionMutation.isPending ? 'Creating Auction...' : 'Create Auction'}
             </Button>
           </form>
-
-          {/* Tips Section */}
-          <div className="mt-8 p-4 bg-blue-50 rounded-lg">
-            <h3 className="font-semibold mb-2">Tips for Success:</h3>
-            <ul className="text-sm text-gray-600 space-y-1">
-              <li>• Use high-quality, well-lit photos of your artwork</li>
-              <li>• Write a detailed description including dimensions and materials</li>
-              <li>• Set a realistic starting price to attract bidders</li>
-              <li>• Choose an end time when most collectors are active</li>
-            </ul>
-          </div>
         </CardContent>
       </Card>
     </div>

@@ -21,9 +21,9 @@ export default function HomePage() {
   // since our mock API now returns full data
 
   return (
-    <main className="flex flex-col items-center justify-center min-h-screen bg-gray-50 p-6 gap-8">
+    <main className="flex flex-col items-center justify-center min-h-screen bg-gray-50 p-6 gap-6">
       {/* Hero Section */}
-      <section className="relative h-96 flex items-center justify-center bg-black mb-16">
+      <section className="relative h-96 flex items-center justify-center bg-black mt-9">
         <div className="absolute inset-0">
           <img 
             src="https://images.unsplash.com/photo-1578301978693-85fa9c0320b9?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"

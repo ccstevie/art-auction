@@ -78,6 +78,12 @@
   --sidebar-ring: oklch(0.708 0 0);
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
+  --gold: #D4AF37;
+  --burgundy: #800020;
+  --cream: #F5F5F0;
+  --sage: #87A96B;
+  --deep-blue: #1E3A5F;
+  --light-gold: #F4E4A6;
 }
 
 .dark {
@@ -138,4 +144,101 @@ button:hover, .btn-like:hover {
 
 button:active, .btn-like:active {
   transform: translateY(0);
+}
+
+/* Custom utility classes for the new colors */
+.bg-gold { background-color: var(--gold); }
+.text-gold { color: var(--gold); }
+.border-gold { border-color: var(--gold); }
+.hover\:bg-gold:hover { background-color: var(--gold); }
+.hover\:text-gold:hover { color: var(--gold); }
+
+.bg-burgundy { background-color: var(--burgundy); }
+.text-burgundy { color: var(--burgundy); }
+.border-burgundy { border-color: var(--burgundy); }
+
+.bg-cream { background-color: var(--cream); }
+.text-cream { color: var(--cream); }
+
+.bg-sage { background-color: var(--sage); }
+.text-sage { color: var(--sage); }
+
+.bg-deep-blue { background-color: var(--deep-blue); }
+.text-deep-blue { color: var(--deep-blue); }
+.border-deep-blue { border-color: var(--deep-blue); }
+
+.bg-light-gold { background-color: var(--light-gold); }
+
+/* Gradient backgrounds */
+.bg-gradient-art {
+  background: linear-gradient(135deg, var(--deep-blue) 0%, var(--burgundy) 100%);
+}
+
+.bg-gradient-gold {
+  background: linear-gradient(135deg, var(--gold) 0%, var(--light-gold) 100%);
+}
+
+/* Enhanced button styles */
+.btn-primary {
+  background-color: var(--gold);
+  color: var(--deep-blue);
+}
+
+.btn-primary:hover {
+  background-color: #E6B800;
+}
+
+.btn-secondary {
+  background-color: var(--deep-blue);
+  color: white;
+}
+
+.btn-secondary:hover {
+  background-color: #2A4A7A;
+}
+
+.btn-outline-gold {
+  border: 2px solid var(--gold);
+  color: var(--gold);
+  background: transparent;
+}
+
+.btn-outline-gold:hover {
+  background-color: var(--gold);
+  color: var(--deep-blue);
+}
+
+/* Card enhancements */
+.art-card {
+  background: linear-gradient(145deg, #ffffff 0%, var(--cream) 100%);
+  border: 1px solid var(--light-gold);
+}
+
+.art-card:hover {
+  box-shadow: 0 10px 30px rgba(212, 175, 55, 0.15);
+  border-color: var(--gold);
+}
+
+/* Add this to your globals.css */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Smooth image loading */
+.image-loading {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
 }

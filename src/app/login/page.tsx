@@ -84,22 +84,6 @@ export default function LoginPage() {
             </Button>
           </form>
 
-          <div className="my-6 flex items-center">
-            <div className="flex-grow border-t border-gray-300"></div>
-            <span className="mx-4 text-gray-500">or</span>
-            <div className="flex-grow border-t border-gray-300"></div>
-          </div>
-
-          <div className="space-y-3">
-            <Button 
-              onClick={() => handleOAuthLogin('github')}
-              className="w-full bg-gray-800 hover:bg-gray-900"
-              disabled={isLoading}
-            >
-              Sign in with GitHub
-            </Button>
-          </div>
-
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-600">
               Don't have an account?{' '}

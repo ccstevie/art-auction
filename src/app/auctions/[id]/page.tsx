@@ -83,10 +83,9 @@ export default function AuctionDetail({ params }: { params: Promise<{ id: string
     return (
       <div className="min-h-screen bg-cream flex items-center justify-center">
         <div className="text-center max-w-md mx-auto px-4">
-          {/* eslint-disable-next-line react/no-unescaped-entities */}
           <div className="text-6xl mb-4">🎨</div>
           <h1 className="text-2xl font-serif text-deep-blue mb-2">Auction Not Found</h1>
-          <p className="text-gray-600 mb-6">The auction you're looking for doesn't exist or has been removed.</p>
+          <p className="text-gray-600 mb-6">The auction you&apos;re looking for doesn&apos;t exist or has been removed.</p>
           <Button onClick={() => router.push('/auctions')} className="bg-gold text-deep-blue hover:bg-yellow-500">
             Browse All Auctions
           </Button>

@@ -2,6 +2,8 @@ import GitHub from 'next-auth/providers/github'
 import Credentials from 'next-auth/providers/credentials'
 import bcrypt from 'bcryptjs'
 import { prisma } from '@/lib/db'
+import { Session } from 'next-auth';
+import { JWT } from 'next-auth/jwt';
 
 export const authConfig = {
   providers: [
@@ -44,11 +46,12 @@ export const authConfig = {
     })
   ],
   callbacks: {
-    async session({ session, token }) {
+    async session(params: { session: Session; token: JWT }) {
+      const { session, token } = params;
       if (session?.user && token?.sub) {
-        session.user.id = token.sub
+        session.user.id = token.sub;
       }
-      return session
+      return session;
     },
   },
   pages: {

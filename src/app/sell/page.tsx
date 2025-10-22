@@ -44,7 +44,7 @@ export default function SellPage() {
 
     setIsUploading(true)
     const formData = new FormData()
-    formData.append('image', file)
+    formData.append('file', file) // Changed from 'image' to 'file'
 
     try {
       const response = await fetch('/api/upload', {
@@ -54,7 +54,7 @@ export default function SellPage() {
       
       const result = await response.json()
       if (result.success) {
-        setForm(prev => ({ ...prev, imageUrl: result.imageUrl }))
+        setForm(prev => ({ ...prev, imageUrl: result.imageUrl })) // Use result.imageUrl
       } else {
         alert(result.error || 'Failed to upload image')
       }

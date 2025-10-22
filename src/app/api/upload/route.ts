@@ -1,57 +1,50 @@
-import { NextResponse } from 'next/server'
-import { writeFile, mkdir } from 'fs/promises'
-import { join } from 'path'
-import { existsSync } from 'fs'
+// app/api/upload/route.ts
+import { put } from '@vercel/blob';
+import { NextResponse } from 'next/server';
 
 export async function POST(request: Request) {
   try {
-    const formData = await request.formData()
-    const file = formData.get('image') as File
+    const formData = await request.formData();
+    const file = formData.get('file') as File;
 
     if (!file) {
-      return NextResponse.json({ error: 'No file uploaded' }, { status: 400 })
+      return NextResponse.json(
+        { error: 'No file provided' },
+        { status: 400 }
+      );
     }
 
     // Validate file type
     if (!file.type.startsWith('image/')) {
-      return NextResponse.json({ error: 'File must be an image' }, { status: 400 })
+      return NextResponse.json(
+        { error: 'Only image files are allowed' },
+        { status: 400 }
+      );
     }
 
-    // Validate file size (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      return NextResponse.json({ error: 'File size must be less than 5MB' }, { status: 400 })
-    }
+    // Create a unique filename
+    const timestamp = Date.now();
+    const extension = file.name.split('.').pop();
+    const filename = `auction-${timestamp}.${extension}`;
 
-    const bytes = await file.arrayBuffer()
-    const buffer = Buffer.from(bytes)
+    // Upload to Vercel Blob
+    const blob = await put(filename, file, {
+      access: 'public',
+    });
 
-    // Create uploads directory if it doesn't exist
-    const uploadsDir = join(process.cwd(), 'public', 'uploads')
-    if (!existsSync(uploadsDir)) {
-      await mkdir(uploadsDir, { recursive: true })
-    }
+    console.log('File uploaded successfully:', blob.url);
 
-    // Generate unique filename
-    const timestamp = Date.now()
-    const safeName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_')
-    const filename = `${timestamp}-${safeName}`
-    const path = join(uploadsDir, filename)
+    return NextResponse.json({
+      success: true,
+      imageUrl: blob.url,
+      downloadUrl: blob.downloadUrl
+    });
 
-    // Save file
-    await writeFile(path, buffer)
-
-    // Return the public URL
-    const imageUrl = `/uploads/${filename}`
-
-    return NextResponse.json({ 
-      success: true, 
-      imageUrl,
-      message: 'Image uploaded successfully'
-    })
   } catch (error) {
-    console.error('Upload error:', error)
-    return NextResponse.json({ 
-      error: 'Failed to upload image' 
-    }, { status: 500 })
+    console.error('Upload error:', error);
+    return NextResponse.json(
+      { error: 'Failed to upload file' },
+      { status: 500 }
+    );
   }
 }

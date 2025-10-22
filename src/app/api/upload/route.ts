@@ -14,7 +14,6 @@ export async function POST(request: Request) {
       );
     }
 
-    // Validate file type
     if (!file.type.startsWith('image/')) {
       return NextResponse.json(
         { error: 'Only image files are allowed' },
@@ -22,22 +21,21 @@ export async function POST(request: Request) {
       );
     }
 
-    // Create a unique filename
+    // Create a unique filename for the artwork
     const timestamp = Date.now();
     const extension = file.name.split('.').pop();
-    const filename = `auction-${timestamp}.${extension}`;
+    const filename = `artwork-${timestamp}.${extension}`;
 
-    // Upload to Vercel Blob
-    const blob = await put(filename, file, {
-      access: 'public',
+    // Upload to Vercel Blob storage
+    const blob = await put(filename, file, { 
+      access: 'public' 
     });
 
-    console.log('File uploaded successfully:', blob.url);
+    console.log('File uploaded successfully to blob storage:', blob.url);
 
     return NextResponse.json({
       success: true,
-      imageUrl: blob.url,
-      downloadUrl: blob.downloadUrl
+      imageUrl: blob.url
     });
 
   } catch (error) {
